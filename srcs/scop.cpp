@@ -6,11 +6,11 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 16:03:17 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/17 10:49:49 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/17 11:05:13 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include <GL/glew.h>
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
@@ -83,17 +83,16 @@ int main(void)
 
 
 	while (!glfwWindowShouldClose(window)) {
-		 // Set the 'time' uniform based on the current time
-        glUniform1f(glGetUniformLocation(shaderProgram, "time"), (float)glfwGetTime());
+		glUniform1f(
+			glGetUniformLocation(shaderProgram, "time"),
+			(float)glfwGetTime()
+		);
 
-        // Render
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // Draw something (e.g., a quad)
-
-        // Swap buffers and poll events
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
+
+	glDeleteProgram(shaderProgram);
 }
