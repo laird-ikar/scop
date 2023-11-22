@@ -6,14 +6,14 @@
 #    By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/15 16:05:50 by bguyot            #+#    #+#              #
-#    Updated: 2023/11/17 10:52:08 by bguyot           ###   ########.fr        #
+#    Updated: 2023/11/22 17:50:23 by bguyot           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		=	scop
 
-INC_FILE	=	scop
-SRC_FILE	=	scop
+INC_FILE	=	scop displayer
+SRC_FILE	=	scop displayer/displayer
 
 INCS 		=	$(addprefix incs/, $(addsuffix .hpp, $(INC_FILE)))
 SRCS 		=	$(addprefix srcs/, $(addsuffix .cpp, $(SRC_FILE)))
@@ -21,7 +21,7 @@ OBJS		=	$(SRCS:.cpp=.o)
 LIBS		=	-lglfw -lGLU -lGL -lXrandr -lXxf86vm -lXi -lXinerama -lX11 -lrt -ldl -lGLEW -lGL
 
 CC			=	c++
-FLAGS		=	-Wall -Wextra -Werror -I incs
+FLAGS		=	-I incs
 DEBUG_FLAGS	=	-fsanitize=address -g
 
 all: $(NAME)
