@@ -2,10 +2,12 @@
 out vec4		FragColor;
 uniform float	time;
 
+in vec3 normal;
+
 void main() {
-	if (gl_FrontFacing)
-	{
-		vec3 color = vec3(sin(time), cos(time), 0.5 * sin(time + 1.0));
-		FragColor = vec4(color, 1.0);
-	}
+	if (gl_FragCoord.z < 0.5)
+		FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	else
+		FragColor = vec4(0.0, 1.0, 1.0, 1.0);
+
 }

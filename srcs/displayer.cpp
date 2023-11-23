@@ -6,26 +6,28 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/23 14:52:56 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/23 16:54:38 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <displayer.hpp>
 
 unsigned int	compileShader(const std::string &path, GLenum shader_type);
-GLFWwindow	*createWindow();
+GLFWwindow		*createWindow();
 unsigned int	setupProgram(void);
-void	setupTriangles(float vertices[], unsigned int indices[], size_t nb_vertices, size_t nb_indices);
-void keys(GLFWwindow *window, int key, int scancode, int action, int modes);
+void			setupTriangles(Parser &parser);
+void			keys(GLFWwindow *window, int key, int scancode, int action, int modes);
 
-void	displayer(float vertices[], unsigned int indices[], size_t nb_vertices, size_t nb_indices)
+void	displayer(Parser &parser)
 {
 	GLFWwindow*		window;
 	unsigned int	shaderProgram;
 
 	window = createWindow();
 	shaderProgram = setupProgram();
-	setupTriangles(vertices, indices, nb_vertices, nb_indices);
+	if (shaderProgram < 0 || !window)
+		return ;
+	setupTriangles(parser);
 
 	glfwSetKeyCallback(window, keys);
 
@@ -41,8 +43,8 @@ void	displayer(float vertices[], unsigned int indices[], size_t nb_vertices, siz
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Draw the triangles (AND ONLY THE TRIANGLES)
-		glDrawArrays(GL_TRIANGLES, 0, nb_vertices);
-		glDrawElements(GL_TRIANGLES, nb_indices, GL_UNSIGNED_INT, 0);
+		// glDrawArrays(GL_TRIANGLES, 0, parser.getNbVertices());
+		glDrawElements(GL_TRIANGLES, parser.getNbIndices(), GL_UNSIGNED_INT, 0);
 
 		// Show the frame
 		glfwSwapBuffers(window);
@@ -126,8 +128,8 @@ unsigned int	setupProgram(void)
 	// geometry_shader = compileShader("srcs/shaders/test.geom", GL_GEOMETRY_SHADER);
 	if (!vertex_shader || ! fragment_shader /* || !geometry_shader*/)
 	{
-		glfwTerminate();
 		std::cerr << "Failed to compile shader" << std::endl;
+		glfwTerminate();
 		return -1;
 	}
 
@@ -143,7 +145,7 @@ unsigned int	setupProgram(void)
 	return (shaderProgram);
 }
 
-void	setupTriangles(float vertices[], unsigned int indices[], size_t nb_vertices, size_t nb_indices)
+void	setupTriangles(Parser &parser)
 {
 	// Generate and bind Vertex Array Object
 	unsigned int	VAO;
@@ -155,7 +157,7 @@ void	setupTriangles(float vertices[], unsigned int indices[], size_t nb_vertices
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	// Init buffer with size and data from vertices
-	glBufferData(GL_ARRAY_BUFFER, nb_vertices * sizeof (float), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, parser.getNbVertices() * sizeof (float), parser.getVerticesArray(), GL_STATIC_DRAW);
 
 	// Specifies how the data is organised inside VBO
 	glVertexAttribPointer(
@@ -163,7 +165,7 @@ void	setupTriangles(float vertices[], unsigned int indices[], size_t nb_vertices
 		3,					// Specifies there is 3 components (X, Y, Z)
 		GL_FLOAT,			// Data is in floats
 		GL_FALSE,			// No need to normalize
-		3 * sizeof (float),	// Offset between vertices (3 floats / vertex)
+		0,					// Offset between vertices (3 floats / vertex)
 		(void*)0			// No additionnal data
 	);
 	// Starts the vertices at the 0th element of the array
@@ -173,8 +175,22 @@ void	setupTriangles(float vertices[], unsigned int indices[], size_t nb_vertices
 	unsigned int	EBO;
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, nb_indices * sizeof (unsigned int), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, parser.getNbIndices() * sizeof (unsigned int), parser.getIndicesArray(), GL_STATIC_DRAW);
 
+	GLuint normalbuffer;
+	glGenBuffers(1, &normalbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+	glBufferData(GL_ARRAY_BUFFER, parser.getNbNormals() * sizeof(float), parser.getNormalsArray(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+	glVertexAttribPointer(
+		1,                                // attribute
+		3,                                // size
+		GL_FLOAT,                         // type
+		GL_FALSE,                         // normalized?
+		0,                                // stride
+		(void*)0                          // array buffer offset
+	);
 	// Unbinds the buffer and array bc no nead no more
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

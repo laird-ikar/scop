@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 16:02:58 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/23 11:28:17 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/23 15:54:47 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,5 +18,6 @@
 #include <fstream>
 #include <sstream>
 #include <string.h>
+#include <Parser.class.hpp>
 
-void	displayer(float vertices[], unsigned int indices[], size_t nb_vertices, size_t nb_indices);
+void	displayer(Parser &parser);

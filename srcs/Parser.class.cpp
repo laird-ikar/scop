@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/23 14:28:11 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/23 16:58:57 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,15 @@ Parser::Parser(void)
 	});
 	this->indices = std::vector<unsigned int>({
 		1, 2, 3,	// ABC
-		0, 1, 2,	// SAB
-		0, 2, 3,	// SBC
-		0, 3, 1,	// SCA
+		0, 2, 1,	// SAB
+		0, 3, 2,	// SBC
+		0, 1, 3,	// SCA
+	});
+	this->normals = std::vector<float>({
+		1.0f, 0.0f, 0.0f,	// S
+		1.0f, 0.0f, 0.0f,	// A
+		1.0f, 0.0f, 0.0f,	// B
+		1.0f, 0.0f, 0.0f,	// C
 	});
 }
 
@@ -52,6 +58,11 @@ float			*Parser::getVerticesArray(void)
 	return (&this->vertices[0]);
 }
 
+float			*Parser::getNormalsArray(void)
+{
+	return (&this->normals[0]);
+}
+
 unsigned int	*Parser::getIndicesArray(void)
 {
 	return (&this->indices[0]);
@@ -60,6 +71,11 @@ unsigned int	*Parser::getIndicesArray(void)
 size_t			Parser::getNbVertices(void)
 {
 	return (this->vertices.size());
+}
+
+size_t			Parser::getNbNormals(void)
+{
+	return (this->normals.size());
 }
 
 size_t			Parser::getNbIndices(void)
