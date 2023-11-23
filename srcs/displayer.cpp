@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/23 12:08:36 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/23 14:52:56 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,11 +118,13 @@ unsigned int	setupProgram(void)
 {
 	unsigned int	fragment_shader;
 	unsigned int	vertex_shader;
+	unsigned int	geometry_shader;
 	unsigned int	shaderProgram;
 
 	fragment_shader = compileShader("srcs/shaders/rainbow.frag", GL_FRAGMENT_SHADER);
 	vertex_shader = compileShader("srcs/shaders/rainbow.vert", GL_VERTEX_SHADER);
-	if (!vertex_shader || ! fragment_shader)
+	// geometry_shader = compileShader("srcs/shaders/test.geom", GL_GEOMETRY_SHADER);
+	if (!vertex_shader || ! fragment_shader /* || !geometry_shader*/)
 	{
 		glfwTerminate();
 		std::cerr << "Failed to compile shader" << std::endl;
@@ -132,9 +134,11 @@ unsigned int	setupProgram(void)
 	shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, fragment_shader);
 	glAttachShader(shaderProgram, vertex_shader);
+	// glAttachShader(shaderProgram, geometry_shader);
 	glLinkProgram(shaderProgram);
 	glDeleteShader(fragment_shader);
 	glDeleteShader(vertex_shader);
+	// glDeleteShader(geometry_shader);
 	glUseProgram(shaderProgram);
 	return (shaderProgram);
 }
@@ -177,22 +181,17 @@ void	setupTriangles(float vertices[], unsigned int indices[], size_t nb_vertices
 
 void keys(GLFWwindow *window, int key, int scancode, int action, int modes)
 {
-	static int	faceModeIndex = 0;
+	int			fillModes[] = {GL_FILL, GL_LINE, GL_POINT};
 	static int	fillModeIndex = 0;
+
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	if ((key == GLFW_KEY_LEFT_BRACKET || key == GLFW_KEY_RIGHT_BRACKET)
 		&& action == GLFW_PRESS)
 	{
-		if (modes == GLFW_MOD_SHIFT)
-		{
-			// change fillmode
-		}
-		else
-		{
-			// change faceMode
-		}
-		glPolygonMode(faceMode, fillMode);
+		fillModeIndex += (92 - key) + 3;
+		fillModeIndex %= 3;
+		glPolygonMode(GL_FRONT_AND_BACK, fillModes[fillModeIndex]);
 	}
 }

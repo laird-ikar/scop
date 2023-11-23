@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/23 11:55:31 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/23 14:28:11 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ Parser::Parser(void)
 	this->vertices = std::vector<float>({
 		0.0f, 0.5f, 0.0f,	// S
 		0.0f, 0.0f, 0.5f,	// A
-		-0.5f, -0.5f, -0.5f,	// B
+		-0.5f, -0.5f, -0.5f,// B
 		0.5f, -0.5f, -0.5f,	// C
 	});
 	this->indices = std::vector<unsigned int>({
