@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/22 17:50:08 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/23 12:08:36 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 unsigned int	compileShader(const std::string &path, GLenum shader_type);
 GLFWwindow	*createWindow();
 unsigned int	setupProgram(void);
-void	setupTriangles(float vertices[], unsigned int indices[], unsigned int nb_vertices, unsigned int nb_indices);
+void	setupTriangles(float vertices[], unsigned int indices[], size_t nb_vertices, size_t nb_indices);
 void keys(GLFWwindow *window, int key, int scancode, int action, int modes);
 
-void	displayer(float vertices[], unsigned int indices[], unsigned int nb_vertices, unsigned int nb_indices)
+void	displayer(float vertices[], unsigned int indices[], size_t nb_vertices, size_t nb_indices)
 {
 	GLFWwindow*		window;
 	unsigned int	shaderProgram;
@@ -30,18 +30,24 @@ void	displayer(float vertices[], unsigned int indices[], unsigned int nb_vertice
 	glfwSetKeyCallback(window, keys);
 
 	while (!glfwWindowShouldClose(window)) {
+		// Send data to the shaders
 		glUniform1f(
 			glGetUniformLocation(shaderProgram, "time"),
 			(float)glfwGetTime()
 		);
 
+		// Clear up the screan with a background color
 		glClearColor(0.2f, 0.3f ,0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		// Draw the triangles (AND ONLY THE TRIANGLES)
+		glDrawArrays(GL_TRIANGLES, 0, nb_vertices);
+		glDrawElements(GL_TRIANGLES, nb_indices, GL_UNSIGNED_INT, 0);
 
+		// Show the frame
 		glfwSwapBuffers(window);
+
+		// Check if keys and stuff have been interacted with
 		glfwPollEvents();
 	}
 
@@ -115,14 +121,8 @@ unsigned int	setupProgram(void)
 	unsigned int	shaderProgram;
 
 	fragment_shader = compileShader("srcs/shaders/rainbow.frag", GL_FRAGMENT_SHADER);
-	if (!fragment_shader)
-	{
-		glfwTerminate();
-		std::cerr << "Failed to compile shader" << std::endl;
-		return -1;
-	}
 	vertex_shader = compileShader("srcs/shaders/rainbow.vert", GL_VERTEX_SHADER);
-	if (!vertex_shader)
+	if (!vertex_shader || ! fragment_shader)
 	{
 		glfwTerminate();
 		std::cerr << "Failed to compile shader" << std::endl;
@@ -139,34 +139,60 @@ unsigned int	setupProgram(void)
 	return (shaderProgram);
 }
 
-void	setupTriangles(float vertices[], unsigned int indices[], unsigned int nb_vertices, unsigned int nb_indices)
+void	setupTriangles(float vertices[], unsigned int indices[], size_t nb_vertices, size_t nb_indices)
 {
-	unsigned int	VBO;
+	// Generate and bind Vertex Array Object
 	unsigned int	VAO;
-	unsigned int	EBO;
-
 	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO); // Now the VAO interactions will be with *this* VAO
+
+	// Generate and bind Vertex Buffer Object
+	unsigned int	VBO;
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	glBindVertexArray(VAO);
-
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nb_vertices, vertices, GL_STATIC_DRAW);
+	// Init buffer with size and data from vertices
+	glBufferData(GL_ARRAY_BUFFER, nb_vertices * sizeof (float), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, nb_indices, indices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	// Specifies how the data is organised inside VBO
+	glVertexAttribPointer(
+		0,					// Index of the vertex attribute
+		3,					// Specifies there is 3 components (X, Y, Z)
+		GL_FLOAT,			// Data is in floats
+		GL_FALSE,			// No need to normalize
+		3 * sizeof (float),	// Offset between vertices (3 floats / vertex)
+		(void*)0			// No additionnal data
+	);
+	// Starts the vertices at the 0th element of the array
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// Same as VBO but for Element Buffer Object
+	unsigned int	EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, nb_indices * sizeof (unsigned int), indices, GL_STATIC_DRAW);
 
-	glBindVertexArray(0);
-	glBindVertexArray(VAO);
+	// Unbinds the buffer and array bc no nead no more
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void keys(GLFWwindow *window, int key, int scancode, int action, int modes)
 {
+	static int	faceModeIndex = 0;
+	static int	fillModeIndex = 0;
+
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	if ((key == GLFW_KEY_LEFT_BRACKET || key == GLFW_KEY_RIGHT_BRACKET)
+		&& action == GLFW_PRESS)
+	{
+		if (modes == GLFW_MOD_SHIFT)
+		{
+			// change fillmode
+		}
+		else
+		{
+			// change faceMode
+		}
+		glPolygonMode(faceMode, fillMode);
+	}
 }
