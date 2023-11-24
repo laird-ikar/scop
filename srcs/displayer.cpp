@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/24 11:54:06 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/24 16:57:41 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	displayer(Parser &parser)
 
 	glfwSetKeyCallback(window, keys);
 	glEnable(GL_DEPTH_TEST);
+	// glEnable(GL_CULL_FACE);
 	while (!glfwWindowShouldClose(window)) {
 		// Send data to the shaders
 		glUniform1f(

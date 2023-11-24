@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 10:58:55 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/24 11:26:56 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/24 15:12:42 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@ class Parser;
 #pragma once
 #include <vector>
 #include <string>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
 
 class Parser {
 private:
