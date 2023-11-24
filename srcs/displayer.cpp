@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/23 16:54:38 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/24 11:54:06 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	displayer(Parser &parser)
 	setupTriangles(parser);
 
 	glfwSetKeyCallback(window, keys);
-
+	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window)) {
 		// Send data to the shaders
 		glUniform1f(
@@ -40,8 +40,7 @@ void	displayer(Parser &parser)
 
 		// Clear up the screan with a background color
 		glClearColor(0.2f, 0.3f ,0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Draw the triangles (AND ONLY THE TRIANGLES)
 		// glDrawArrays(GL_TRIANGLES, 0, parser.getNbVertices());
 		glDrawElements(GL_TRIANGLES, parser.getNbIndices(), GL_UNSIGNED_INT, 0);
@@ -177,20 +176,6 @@ void	setupTriangles(Parser &parser)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, parser.getNbIndices() * sizeof (unsigned int), parser.getIndicesArray(), GL_STATIC_DRAW);
 
-	GLuint normalbuffer;
-	glGenBuffers(1, &normalbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-	glBufferData(GL_ARRAY_BUFFER, parser.getNbNormals() * sizeof(float), parser.getNormalsArray(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-	glVertexAttribPointer(
-		1,                                // attribute
-		3,                                // size
-		GL_FLOAT,                         // type
-		GL_FALSE,                         // normalized?
-		0,                                // stride
-		(void*)0                          // array buffer offset
-	);
 	// Unbinds the buffer and array bc no nead no more
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
