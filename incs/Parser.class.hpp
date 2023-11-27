@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 10:58:55 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/24 15:12:42 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/27 11:17:31 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ class Parser;
 
 class Parser {
 private:
-	std::vector<float>			vertices;
-	std::vector<unsigned int>	indices;
+	std::vector<double>			_vertices;
+	std::vector<unsigned int>	_indices;
 
 public:
 					Parser(void);
@@ -32,7 +32,7 @@ public:
 
 	Parser			&operator=(const Parser &rhs);
 
-	float			*getVerticesArray(void);
+	double			*getVerticesArray(void);
 	unsigned int	*getIndicesArray(void);
 	size_t			getNbVertices(void);
 	size_t			getNbIndices(void);

@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/24 16:57:41 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/27 11:21:24 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,13 +157,13 @@ void	setupTriangles(Parser &parser)
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	// Init buffer with size and data from vertices
-	glBufferData(GL_ARRAY_BUFFER, parser.getNbVertices() * sizeof (float), parser.getVerticesArray(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, parser.getNbVertices() * sizeof (double), parser.getVerticesArray(), GL_STATIC_DRAW);
 
 	// Specifies how the data is organised inside VBO
 	glVertexAttribPointer(
 		0,					// Index of the vertex attribute
 		3,					// Specifies there is 3 components (X, Y, Z)
-		GL_FLOAT,			// Data is in floats
+		GL_DOUBLE,			// Data is in floats
 		GL_FALSE,			// No need to normalize
 		0,					// Offset between vertices (3 floats / vertex)
 		(void*)0			// No additionnal data
