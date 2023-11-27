@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/27 11:43:02 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/27 13:56:50 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ Parser::Parser(const std::string &path)
 	double max = *min_max.second;
 	for (int i = 0; i < this->_vertices.size() ; i++)
 	{
-		this->_vertices[i] = -0.8 + (this->_vertices[i] - min) / (max- min) * (1.6);
+		this->_vertices[i] = -0.9 + (this->_vertices[i] - min) / (max- min) * (1.8);
 	}
 	double	Xmin = this->_vertices[0],
 			Xmax = this->_vertices[0],

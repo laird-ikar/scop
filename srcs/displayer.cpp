@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/27 11:21:24 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/27 14:24:30 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ GLFWwindow		*createWindow();
 unsigned int	setupProgram(void);
 void			setupTriangles(Parser &parser);
 void			keys(GLFWwindow *window, int key, int scancode, int action, int modes);
+
+float	w = 1.0;
 
 void	displayer(Parser &parser)
 {
@@ -37,6 +39,10 @@ void	displayer(Parser &parser)
 		glUniform1f(
 			glGetUniformLocation(shaderProgram, "time"),
 			(float)glfwGetTime()
+		);
+		glUniform1f(
+			glGetUniformLocation(shaderProgram, "view_depth"),
+			(float)w
 		);
 
 		// Clear up the screan with a background color
@@ -183,9 +189,8 @@ void	setupTriangles(Parser &parser)
 
 void keys(GLFWwindow *window, int key, int scancode, int action, int modes)
 {
-	int			fillModes[] = {GL_FILL, GL_LINE, GL_POINT};
-	static int	fillModeIndex = 0;
-
+	int				fillModes[] = {GL_FILL, GL_LINE, GL_POINT};
+	static int		fillModeIndex = 0;
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -196,4 +201,11 @@ void keys(GLFWwindow *window, int key, int scancode, int action, int modes)
 		fillModeIndex %= 3;
 		glPolygonMode(GL_FRONT_AND_BACK, fillModes[fillModeIndex]);
 	}
-}
+	if ((key == '=' || key == '-')
+			&& (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
+		if (key == '=')
+			w *= 1.10;
+		else
+			w /= 1.10;
+	}}
