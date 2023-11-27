@@ -5,20 +5,14 @@ uniform float	time;
 
 void main()
 {
-	mat3 projection;
-	mat3 rotationY;
-
-	projection[0] = vec3(1.0, 0.0, 0.0);
-	projection[1] = vec3(0.0, 1.0, 0.0);
-	projection[2] = vec3(0.0, 0.0, 1.0);
-
-	rotationY[0] = vec3(cos(time), 0.0, sin(time));
-	rotationY[1] = vec3(0.0, 1.0, 0.0);
-	rotationY[2] = vec3(sin(time), 0.0, cos(time));
-
-	vec3 projected =
-		projection
-		* rotationY
-		* aPos;
-	gl_Position = vec4(projected.x, projected.y, projected.z, 1.0);
+	vec4 homogenous = vec4(aPos, 1.0);
+	mat4 projection = mat4(	1, 0, 0, 0,
+							0, 1, 0, 0,
+							0, 0, 1, 0,
+							0, 0, 0, 1);
+	mat4 rotY	 = mat4(	cos(time),	0,	-sin(time),	0,
+							0,			1,	0,			0,
+							sin(time),	0,	cos(time),	0,
+							0,			0,	0,			1);
+	gl_Position = projection * rotY * homogenous;
 }
