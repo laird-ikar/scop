@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/24 17:00:58 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/27 11:43:02 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ Parser::Parser(void)
 	// });
 
 	// Pointing to the top
-	this->vertices = std::vector<float>({
-		0.0f, 0.5f, 0.0f,	// S
-		0.0f, -0.5f, -0.5f,	// A
-		-0.5f, -0.5f, 0.5f,// B
-		0.5f, -0.5f, 0.5f,	// C
+	this->_vertices = std::vector<double>({
+		0.0, 0.5, 0.0,	// S
+		0.0, -0.5, -0.5,	// A
+		-0.5, -0.5, 0.5,// B
+		0.5, -0.5, 0.5,	// C
 	});
-	this->indices = std::vector<unsigned int>({
+	this->_indices = std::vector<unsigned int>({
 		0, 1, 2,			// SBA
 		0, 2, 3,			// SBC
 		0, 3, 1,			// SCA
@@ -60,10 +60,10 @@ Parser::Parser(const std::string &path)
 			std::string token;
 			while ((pos = line.find(" ")) != std::string::npos) {
 				token = line.substr(0, pos);
-				this->vertices.push_back(std::stof(token));
+				this->_vertices.push_back(std::stod(token));
 				line.erase(0, pos + 1);
 			}
-			this->vertices.push_back(std::stof(line));
+			this->_vertices.push_back(std::stod(line));
 		}
 		// if (/*vn*/)
 		// 	vertexNormal;
@@ -97,18 +97,18 @@ Parser::Parser(const std::string &path)
 
 			while ((pos = line.find(" ")) != std::string::npos) {
 				token = line.substr(0, pos);
-				this->indices.push_back(first);
-				this->indices.push_back(previous);
-				this->indices.push_back(std::stof(token) - 1);
+				this->_indices.push_back(first);
+				this->_indices.push_back(previous);
+				this->_indices.push_back(std::stoi(token) - 1);
 
 				// std::cout << first << "," << previous << "," << std::stof(token) - 1 << " ; ";
 
 				line.erase(0, pos + 1);
 				previous = std::stof(token)- 1;
 			}
-			this->indices.push_back(first);
-			this->indices.push_back(previous);
-			this->indices.push_back(std::stof(line) - 1);
+			this->_indices.push_back(first);
+			this->_indices.push_back(previous);
+			this->_indices.push_back(std::stod(line) - 1);
 			// std::cout << first << "," << previous << "," << std::stof(line) - 1;
 			// std::cout << std::endl;
 		}
@@ -119,12 +119,63 @@ Parser::Parser(const std::string &path)
 		// if (/*usemtl*/)
 		// 	mtl;
 	}
-	auto min_max = std::minmax_element(this->vertices.begin(), this->vertices.end());
-	float min = *min_max.first;
-	float max = *min_max.second;
-	for (int i = 0; i < this->vertices.size() ; i++)
+	auto min_max = std::minmax_element(this->_vertices.begin(), this->_vertices.end());
+	double min = *min_max.first;
+	double max = *min_max.second;
+	for (int i = 0; i < this->_vertices.size() ; i++)
 	{
-		this->vertices[i] = -0.8f + (this->vertices[i] - min) / (max- min) * (1.6f);
+		this->_vertices[i] = -0.8 + (this->_vertices[i] - min) / (max- min) * (1.6);
+	}
+	double	Xmin = this->_vertices[0],
+			Xmax = this->_vertices[0],
+			Ymin = this->_vertices[1],
+			Ymax = this->_vertices[1],
+			Zmin = this->_vertices[2],
+			Zmax = this->_vertices[2];
+	int		count = 0;
+	for (double &e : this->_vertices)
+	{
+		switch (count)
+		{
+		case 0:
+			if (Xmin > e)
+				Xmin = e;
+			if (Xmax < e)
+				Xmax = e;
+			break;
+		case 1:
+			if (Ymin > e)
+				Ymin = e;
+			if (Ymax < e)
+				Ymax = e;
+			break;
+		case 2:
+			if (Zmin > e)
+				Zmin = e;
+			if (Zmax < e)
+				Zmax = e;
+			break;
+		}
+		count++;
+		count %= 3;
+	}
+	count = 0;
+	for (double &e : this->_vertices)
+	{
+		switch (count)
+		{
+		case 0:
+			e -= (Xmin + Xmax) / 2;
+			break;
+		case 1:
+			e -= (Ymin + Ymax) / 2;
+			break;
+		case 2:
+			e -= (Zmin + Zmax) / 2;
+			break;
+		}
+		count++;
+		count %= 3;
 	}
 }
 
@@ -138,29 +189,29 @@ Parser			&Parser::operator=(const Parser &rhs)
 {
 	if (this != &rhs)
 	{
-		this->vertices = std::vector<float>(rhs.vertices);
-		this->indices = std::vector<unsigned int>(rhs.indices);
+		this->_vertices = std::vector<double>(rhs._vertices);
+		this->_indices = std::vector<unsigned int>(rhs._indices);
 	}
 	return *this;
 }
 
-float			*Parser::getVerticesArray(void)
+double			*Parser::getVerticesArray(void)
 {
-	return (&this->vertices[0]);
+	return (&this->_vertices[0]);
 }
 
 unsigned int	*Parser::getIndicesArray(void)
 {
-	return (&this->indices[0]);
+	return (&this->_indices[0]);
 }
 
 size_t			Parser::getNbVertices(void)
 {
-	return (this->vertices.size());
+	return (this->_vertices.size());
 }
 
 size_t			Parser::getNbIndices(void)
 {
-	return (this->indices.size());
+	return (this->_indices.size());
 }
 
