@@ -6,14 +6,14 @@
 #    By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/15 16:05:50 by bguyot            #+#    #+#              #
-#    Updated: 2023/11/23 11:28:55 by bguyot           ###   ########.fr        #
+#    Updated: 2023/11/28 17:09:33 by bguyot           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		=	scop
 
 INC_FILE	=	scop displayer Parser.class
-SRC_FILE	=	scop displayer Parser.class
+SRC_FILE	=	scop displayer Parser.class bmp_parser
 
 INCS 		=	$(addprefix incs/, $(addsuffix .hpp, $(INC_FILE)))
 SRCS 		=	$(addprefix srcs/, $(addsuffix .cpp, $(SRC_FILE)))

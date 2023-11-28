@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/28 14:50:20 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/28 16:55:37 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,12 +94,25 @@ Parser::Parser(const std::string &path)
 			// Add the vertex position and the face color into vertex_data
 			for (unsigned int i : position_indices)
 			{
+				// X, Y, Z
 				this->_vertex_data.push_back(this->_vertices[3 * i]);
 				this->_vertex_data.push_back(this->_vertices[3 * i + 1]);
 				this->_vertex_data.push_back(this->_vertices[3 * i + 2]);
+
+				// R, G, B
 				this->_vertex_data.push_back(r);
 				this->_vertex_data.push_back(g);
 				this->_vertex_data.push_back(b);
+
+				// Cylinder U, V
+				this->_vertex_data.push_back(
+					std::atan2(this->_vertices[3 * i], this->_vertices[3 * i + 2])
+				); // Angle of the vertex
+				this->_vertex_data.push_back(
+					this->_vertices[3 * i + 1]
+				); // Height of the vertex
+
+				// Add the index of the vertex_data to data_indices
 				data_indices.push_back(this->_vertex_data.size() / NB_DATA_FEILD - 1);
 			}
 

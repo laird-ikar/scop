@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/28 15:23:11 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/28 17:50:39 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 unsigned int	compileShader(const std::string &path, GLenum shader_type);
 GLFWwindow		*createWindow();
 unsigned int	setupProgram(void);
-void			setupTriangles(Parser &parser);
+void			setupVertex(Parser &parser);
+void			setupTexture(void);
 void			keys(GLFWwindow *window, int key, int scancode, int action, int modes);
 
 float	w = 1.33;
@@ -29,7 +30,10 @@ void	displayer(Parser &parser)
 	shaderProgram = setupProgram();
 	if (shaderProgram < 0 || !window)
 		return ;
-	setupTriangles(parser);
+	setupVertex(parser);
+	setupTexture();
+	glActiveTexture(GL_TEXTURE0);
+	glUniform1i(glGetUniformLocation(shaderProgram, "texture"), 0);
 
 	glfwSetKeyCallback(window, keys);
 	glEnable(GL_DEPTH_TEST);
@@ -61,6 +65,26 @@ void	displayer(Parser &parser)
 
 	glfwTerminate();
 	glDeleteProgram(shaderProgram);
+}
+
+void			setupTexture(void)
+{
+	const char* texturePath = "./resources/unicorn.bmp";
+	int width, height;
+	std::vector<unsigned char> imageData;
+	if (!bmp_parser(texturePath, imageData, width, height))
+		return ;
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, &imageData[0]);
+
+	// Set texture parameters (optional)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 unsigned int	compileShader(const std::string &path, GLenum shader_type)
@@ -151,7 +175,7 @@ unsigned int	setupProgram(void)
 	return (shaderProgram);
 }
 
-void	setupTriangles(Parser &parser)
+void	setupVertex(Parser &parser)
 {
 	// Generate and bind Vertex Array Object
 	unsigned int	VAO;
@@ -176,7 +200,8 @@ void	setupTriangles(Parser &parser)
 	);
 	// Starts the vertices at the 0th element of the array
 	glEnableVertexAttribArray(0);
-		glVertexAttribPointer(
+
+	glVertexAttribPointer(
 		1,					// Index of the vertex attribute
 		3,					// Specifies there is 3 components (X, Y, Z)
 		GL_DOUBLE,			// Data is in floats
@@ -186,6 +211,17 @@ void	setupTriangles(Parser &parser)
 	);
 	// Starts the vertices at the 0th element of the array
 	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(
+		2,					// Index of the vertex attribute
+		2,					// Specifies there is 3 components (X, Y, Z)
+		GL_DOUBLE,			// Data is in floats
+		GL_FALSE,			// No need to normalize
+		sizeof (double) * NB_DATA_FEILD, // Offset between vertices (3 floats / vertex)
+		(void*) (sizeof (double) * 6)		// No offset at the begining
+	);
+	// Starts the vertices at the 0th element of the array
+	glEnableVertexAttribArray(2);
 
 	// Same as VBO but for Element Buffer Object
 	unsigned int	EBO;
