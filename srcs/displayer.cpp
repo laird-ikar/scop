@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/27 14:24:30 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/28 15:23:11 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ unsigned int	setupProgram(void);
 void			setupTriangles(Parser &parser);
 void			keys(GLFWwindow *window, int key, int scancode, int action, int modes);
 
-float	w = 1.0;
+float	w = 1.33;
 
 void	displayer(Parser &parser)
 {
@@ -42,7 +42,7 @@ void	displayer(Parser &parser)
 		);
 		glUniform1f(
 			glGetUniformLocation(shaderProgram, "view_depth"),
-			(float)w
+			w
 		);
 
 		// Clear up the screan with a background color
@@ -163,7 +163,7 @@ void	setupTriangles(Parser &parser)
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	// Init buffer with size and data from vertices
-	glBufferData(GL_ARRAY_BUFFER, parser.getNbVertices() * sizeof (double), parser.getVerticesArray(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, parser.getNbVertexData() * sizeof (double), parser.getVertexDataArray(), GL_STATIC_DRAW);
 
 	// Specifies how the data is organised inside VBO
 	glVertexAttribPointer(
@@ -171,11 +171,21 @@ void	setupTriangles(Parser &parser)
 		3,					// Specifies there is 3 components (X, Y, Z)
 		GL_DOUBLE,			// Data is in floats
 		GL_FALSE,			// No need to normalize
-		0,					// Offset between vertices (3 floats / vertex)
-		(void*)0			// No additionnal data
+		sizeof (double) * NB_DATA_FEILD, // Offset between vertices (3 floats / vertex)
+		(void*)0			// No offset at the begining
 	);
 	// Starts the vertices at the 0th element of the array
 	glEnableVertexAttribArray(0);
+		glVertexAttribPointer(
+		1,					// Index of the vertex attribute
+		3,					// Specifies there is 3 components (X, Y, Z)
+		GL_DOUBLE,			// Data is in floats
+		GL_FALSE,			// No need to normalize
+		sizeof (double) * NB_DATA_FEILD, // Offset between vertices (3 floats / vertex)
+		(void*) (sizeof (double) * 3)		// No offset at the begining
+	);
+	// Starts the vertices at the 0th element of the array
+	glEnableVertexAttribArray(1);
 
 	// Same as VBO but for Element Buffer Object
 	unsigned int	EBO;
@@ -208,4 +218,5 @@ void keys(GLFWwindow *window, int key, int scancode, int action, int modes)
 			w *= 1.10;
 		else
 			w /= 1.10;
-	}}
+	}
+}
