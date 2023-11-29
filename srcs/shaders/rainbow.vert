@@ -2,11 +2,14 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 layout (location = 2) in vec2 aUV;
+layout (location = 3) in vec3 aNormal;
 
 uniform float	time;
 uniform float	view_depth;
 
 flat out	vec4		color;
+flat out	vec4		greyscale;
+flat out	vec4		normal;
 out			vec2		uv;
 
 void main()
@@ -22,5 +25,7 @@ void main()
 							0,			0,	0,			1);
 	gl_Position = projection * rotY * homogenous;
 	color = vec4(aColor, 1.0);
+	greyscale = vec4(aColor.r, aColor.r, aColor.r, 1.0);
+	normal = vec4(aNormal / 2 + 0.5, 1.0);
 	uv = aUV;
 }

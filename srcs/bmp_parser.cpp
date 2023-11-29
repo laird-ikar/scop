@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/28 17:01:40 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/29 10:49:52 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/29 13:36:36 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ bool bmp_parser(const char* filePath, std::vector<unsigned char>& imageData, int
 
 	char magic_number[2];
 	file.read(magic_number, 2);
-	std::cout << "Magic number: " << magic_number[0] << magic_number[1] << std::endl;
+	// std::cout << "Magic number: " << magic_number[0] << magic_number[1] << std::endl;
 
 	if (magic_number[0] != 'B' || magic_number[1] != 'M') {
 		std::cerr << "Invalid BMP file: " << filePath << std::endl;
@@ -33,57 +33,57 @@ bool bmp_parser(const char* filePath, std::vector<unsigned char>& imageData, int
 
 	uint32_t file_size;
 	file.read((char*)&file_size, 4);
-	std::cout << "File size: " << file_size << std::endl;
+	// std::cout << "File size: " << file_size << std::endl;
 
 	uint32_t reserved;
 	file.read((char*)&reserved, 4);
-	std::cout << "Reserved: " << reserved << std::endl;
+	// std::cout << "Reserved: " << reserved << std::endl;
 
 	uint32_t data_offset;
 	file.read((char*)&data_offset, 4);
-	std::cout << "Data offset: " << data_offset << std::endl;
+	// std::cout << "Data offset: " << data_offset << std::endl;
 
 	uint32_t header_size;
 	file.read((char*)&header_size, 4);
-	std::cout << "Header size: " << header_size << std::endl;
+	// std::cout << "Header size: " << header_size << std::endl;
 
 	file.read((char*)&width, 4);
-	std::cout << "Width: " << width << std::endl;
+	// std::cout << "Width: " << width << std::endl;
 
 	file.read((char*)&height, 4);
-	std::cout << "Height: " << height << std::endl;
+	// std::cout << "Height: " << height << std::endl;
 
 	uint16_t planes;
 	file.read((char*)&planes, 2);
-	std::cout << "Planes: " << planes << std::endl;
+	// std::cout << "Planes: " << planes << std::endl;
 
 	uint16_t bits_per_pixel;
 	file.read((char*)&bits_per_pixel, 2);
-	std::cout << "Bits per pixel: " << bits_per_pixel << std::endl;
+	// std::cout << "Bits per pixel: " << bits_per_pixel << std::endl;
 
 	uint32_t compression;
 	file.read((char*)&compression, 4);
-	std::cout << "Compression: " << compression << std::endl;
+	// std::cout << "Compression: " << compression << std::endl;
 
 	uint32_t data_size;
 	file.read((char*)&data_size, 4);
-	std::cout << "Data size: " << data_size << std::endl;
+	// std::cout << "Data size: " << data_size << std::endl;
 
 	uint32_t h_resolution;
 	file.read((char*)&h_resolution, 4);
-	std::cout << "Horizontal resolution: " << h_resolution << std::endl;
+	// std::cout << "Horizontal resolution: " << h_resolution << std::endl;
 
 	uint32_t v_resolution;
 	file.read((char*)&v_resolution, 4);
-	std::cout << "Vertical resolution: " << v_resolution << std::endl;
+	// std::cout << "Vertical resolution: " << v_resolution << std::endl;
 
 	uint32_t colors;
 	file.read((char*)&colors, 4);
-	std::cout << "Colors: " << colors << std::endl;
+	// std::cout << "Colors: " << colors << std::endl;
 
 	uint32_t important_colors;
 	file.read((char*)&important_colors, 4);
-	std::cout << "Important colors: " << important_colors << std::endl;
+	// std::cout << "Important colors: " << important_colors << std::endl;
 
 	// Skip the rest of the header
 	file.seekg(data_offset, std::ios::beg);

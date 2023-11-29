@@ -6,11 +6,28 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/29 10:28:37 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/29 14:40:55 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Parser.class.hpp>
+
+struct Vector3D {
+	double x, y, z;
+
+	Vector3D(double x, double y, double z) : x(x), y(y), z(z) {}
+	Vector3D() : x(0), y(0), z(0) {}
+
+	// Méthode pour afficher le vecteur
+	void print() const {
+		std::cout << "(" << x << ", " << y << ", " << z << ")" << std::endl;
+	}
+};
+
+Vector3D normalize(const Vector3D& v);
+Vector3D crossProduct(const Vector3D& v1, const Vector3D& v2);
+std::vector<std::vector<double>> calculateRotationMatrix(const Vector3D& n);
+Vector3D matrixVectorMultiply(const std::vector<std::vector<double>>& matrix, const Vector3D& v);
 
 Parser::Parser(void)
 {
@@ -91,6 +108,25 @@ Parser::Parser(const std::string &path)
 			}
 			position_indices.push_back(std::stoi(line) - 1);
 
+			double v1x = this->_vertices[3 * position_indices[0]] - this->_vertices[3 * position_indices[1]];
+			double v1y = this->_vertices[3 * position_indices[0] + 1] - this->_vertices[3 * position_indices[1] + 1];
+			double v1z = this->_vertices[3 * position_indices[0] + 2] - this->_vertices[3 * position_indices[1] + 2];
+			double v2x = this->_vertices[3 * position_indices[0]] - this->_vertices[3 * position_indices[2]];
+			double v2y = this->_vertices[3 * position_indices[0] + 1] - this->_vertices[3 * position_indices[2] + 1];
+			double v2z = this->_vertices[3 * position_indices[0] + 2] - this->_vertices[3 * position_indices[2] + 2];
+
+			// Find the normal of the face
+			double l = v1y * v2z - v1z * v2y;
+			double m = v1z * v2x - v1x * v2z;
+			double n = v1x * v2y - v1y * v2x;
+
+			// Find the normal of the face
+
+			double len = std::sqrt(l * l + m * m + n * n);
+			l /= len;
+			m /= len;
+			n /= len;
+
 			// Add the vertex position and the face color into vertex_data
 			for (unsigned int i : position_indices)
 			{
@@ -103,6 +139,11 @@ Parser::Parser(const std::string &path)
 				this->_vertex_data.push_back(r);
 				this->_vertex_data.push_back(g);
 				this->_vertex_data.push_back(b);
+
+				// L, M, M
+				this->_vertex_data.push_back(l);
+				this->_vertex_data.push_back(m);
+				this->_vertex_data.push_back(m);
 
 				// Cylinder U, V
 				this->_vertex_data.push_back(
@@ -161,6 +202,20 @@ Parser::Parser(const std::string &path)
 		this->_vertex_data[i] = (this->_vertex_data[i] - x_center) / ratio * 0.9;
 		this->_vertex_data[i + 1] = (this->_vertex_data[i + 1] - y_center) / ratio * 0.9;
 		this->_vertex_data[i + 2] = (this->_vertex_data[i + 2] - z_center) / ratio * 0.9;
+
+ 		std::vector<std::vector<double>> rotationMatrix = calculateRotationMatrix(Vector3D(
+			this->_vertex_data[i + 6],
+			this->_vertex_data[i + 7],
+			this->_vertex_data[i + 8]
+		));
+		Vector3D uv = matrixVectorMultiply(rotationMatrix, Vector3D(
+			this->_vertex_data[i],
+			this->_vertex_data[i + 1],
+			this->_vertex_data[i + 2]
+		));
+
+		this->_vertex_data[i + 9] = uv.x * 1;
+		this->_vertex_data[i + 10] = uv.y * 1;
 	}
 }
 
@@ -211,4 +266,57 @@ double			*Parser::getVertexDataArray(void)
 size_t			Parser::getNbVertexData(void)
 {
 	return (this->_vertex_data.size());
+}
+
+
+Vector3D normalize(const Vector3D& v)
+{
+	double length = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+	return Vector3D(v.x / length, v.y / length, v.z / length);
+}
+
+// Fonction pour calculer le produit vectoriel de deux vecteurs
+Vector3D crossProduct(const Vector3D& v1, const Vector3D& v2)
+{
+	return Vector3D(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
+}
+
+// Fonction pour calculer le produit scalaire de deux vecteurs
+double dotProduct(const Vector3D& v1, const Vector3D& v2)
+{
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+// Fonction pour calculer la matrice de rotation R
+std::vector<std::vector<double>> calculateRotationMatrix(const Vector3D& n)
+{
+	// On commence par calculer la matrice de rotation R
+	// On commence par calculer le vecteur U
+	Vector3D u;
+	if (n.x == 0 && n.y == 0)
+		u = Vector3D(1, 0, 0);
+	else
+		u = normalize(Vector3D(n.y, -n.x, 0));
+
+	// On calcule le vecteur V
+	Vector3D v = crossProduct(n, u);
+
+	// On calcule la matrice de rotation R
+	std::vector<std::vector<double>> R = {
+		{u.x, u.y, u.z},
+		{v.x, v.y, v.z},
+		{n.x, n.y, n.z}
+	};
+
+	return R;
+}
+
+// Fonction pour multiplier une matrice par un vecteur
+Vector3D matrixVectorMultiply(const std::vector<std::vector<double>>& matrix, const Vector3D& v)
+{
+	double resultX = matrix[0][0] * v.x + matrix[0][1] * v.y + matrix[0][2] * v.z;
+	double resultY = matrix[1][0] * v.x + matrix[1][1] * v.y + matrix[1][2] * v.z;
+	double resultZ = matrix[2][0] * v.x + matrix[2][1] * v.y + matrix[2][2] * v.z;
+
+	return Vector3D(resultX, resultY, resultZ);
 }

@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/28 17:50:39 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/11/29 12:04:14 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void			setupVertex(Parser &parser);
 void			setupTexture(void);
 void			keys(GLFWwindow *window, int key, int scancode, int action, int modes);
 
-float	w = 1.33;
+float	w = 1.5;
 
 void	displayer(Parser &parser)
 {
@@ -218,10 +218,21 @@ void	setupVertex(Parser &parser)
 		GL_DOUBLE,			// Data is in floats
 		GL_FALSE,			// No need to normalize
 		sizeof (double) * NB_DATA_FEILD, // Offset between vertices (3 floats / vertex)
-		(void*) (sizeof (double) * 6)		// No offset at the begining
+		(void*) (sizeof (double) * 9)		// No offset at the begining
 	);
 	// Starts the vertices at the 0th element of the array
 	glEnableVertexAttribArray(2);
+
+	glVertexAttribPointer(
+		3,					// Index of the vertex attribute
+		3,					// Specifies there is 3 components (X, Y, Z)
+		GL_DOUBLE,			// Data is in floats
+		GL_FALSE,			// No need to normalize
+		sizeof (double) * NB_DATA_FEILD, // Offset between vertices (3 floats / vertex)
+		(void*) (sizeof (double) * 6)		// No offset at the begining
+	);
+	// Starts the vertices at the 0th element of the array
+	glEnableVertexAttribArray(3);
 
 	// Same as VBO but for Element Buffer Object
 	unsigned int	EBO;
