@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/12/01 14:22:13 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/12/01 14:53:38 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ int		do_time_flow = 1;
 float	deltaX = 0;
 float	deltaY = 0;
 float	rotationZ = 0;
+float	rotationX = 0;
 
 void	displayer(Parser &parser)
 {
@@ -54,6 +55,7 @@ void	displayer(Parser &parser)
 		glUniform1f(glGetUniformLocation(shaderProgram, "deltaX"), deltaX);
 		glUniform1f(glGetUniformLocation(shaderProgram, "deltaY"), deltaY);
 		glUniform1f(glGetUniformLocation(shaderProgram, "rotationZ"), rotationZ);
+		glUniform1f(glGetUniformLocation(shaderProgram, "rotationX"), rotationX);
 
 		// Clear up the screan with a background color
 		glClearColor(0.2f, 0.3f ,0.3f, 1.0f);
@@ -297,4 +299,8 @@ void keys(GLFWwindow *window, int key, int scancode, int action, int modes)
 		rotationZ += 0.03;
 	if (key == GLFW_KEY_E && (action == GLFW_PRESS || action == GLFW_REPEAT))
 		rotationZ -= 0.03;
+	if (key == GLFW_KEY_R && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		rotationX += 0.03;
+	if (key == GLFW_KEY_F && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		rotationX -= 0.03;
 }

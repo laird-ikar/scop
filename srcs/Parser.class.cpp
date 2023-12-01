@@ -6,11 +6,27 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/12/01 13:56:40 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/12/01 14:52:32 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Parser.class.hpp>
+
+std::vector<std::string> split(std::string s, std::string delimiter) {
+	size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+	std::string token;
+	std::vector<std::string> res;
+
+	while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+		token = s.substr (pos_start, pos_end - pos_start);
+		pos_start = pos_end + delim_len;
+		if (token.length() > 0)
+			res.push_back (token);
+	}
+
+	res.push_back (s.substr (pos_start));
+	return res;
+}
 
 Parser::Parser(void):
 	_vertices({
@@ -80,65 +96,30 @@ Parser			&Parser::operator=(const Parser &rhs)
 
 void	Parser::_parseFace(std::string &line)
 {
-	Face		face;
-	size_t		pos;
-	std::string	token;
-	int			index;
+	Face						face;
+	std::vector<std::string>	token_list;
+	std::string					token;
 
-	// Skip f
-	pos = line.find(" ");
-	line.erase(0, pos + 1);
-	// For all vertices
-	while ((pos = line.find(" ")) != std::string::npos) {
-		// Read vertex
-		token = line.substr(0, pos);
-		index = std::stoi(token) - 1;
-		if (index >= this->_vertices.size())
-		{
-			*this = Parser();
-			std::cerr << "Error: invalid vertex index" << std::endl;
-			return ;
-		}
-		face.vertices.push_back(this->_vertices[index]);
-		line.erase(0, pos + 1);
-	}
-	// Add last vertex of line
-	index = std::stoi(line) - 1;
-	if (index >= this->_vertices.size())
+	token_list = split(line, " ");
+	for (int i = 1; i < token_list.size(); i++)
 	{
-		*this = Parser();
-		std::cerr << "Error: invalid vertex index" << std::endl;
-		return ;
+		if (token_list[i].length() == 0)
+			continue ;
+		token = token_list[i].substr(0, token_list[i].find("/"));
+		face.vertices.push_back(this->_vertices[std::stoi(token) - 1]);
 	}
-	face.vertices.push_back(this->_vertices[index]);
-	// Save face
 	this->_faces.push_back(face);
 }
 
 void	Parser::_parseVertex(std::string &line)
 {
-	Vector3D	vertex;
-	size_t			pos;
-	std::string		token;
+	Vector3D					vertex;
+	std::vector<std::string>	token_list;
 
-	// Skip f
-	pos = line.find(" ");
-	line.erase(0, pos + 1);
-	// Read x
-	pos = line.find(" ");
-	token = line.substr(0, pos);
-	vertex.x = std::stod(token);
-	line.erase(0, pos + 1);
-	// Read y
-	pos = line.find(" ");
-	token = line.substr(0, pos);
-	vertex.y = std::stod(token);
-	line.erase(0, pos + 1);
-	// Read z
-	pos = line.find(" ");
-	token = line.substr(0, pos);
-	vertex.z = std::stod(token);
-	// Save vertex
+	token_list = split(line, " ");
+	vertex.x = std::stod(token_list[1]);
+	vertex.y = std::stod(token_list[2]);
+	vertex.z = std::stod(token_list[3]);
 	this->_vertices.push_back(vertex);
 }
 

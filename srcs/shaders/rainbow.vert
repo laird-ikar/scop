@@ -9,6 +9,7 @@ uniform float	view_depth;
 uniform float	deltaX;
 uniform float	deltaY;
 uniform float	rotationZ;
+uniform float	rotationX;
 
 flat out	vec4		color;
 flat out	vec4		greyscale;
@@ -30,7 +31,11 @@ void main()
 							sin(rotationZ),	cos(rotationZ),		0,	0,
 							0,				0,					1,	0,
 							0,				0,					0,	1);
-	gl_Position = projection * rotY * rotZ * homogenous;
+	mat4 rotX	 = mat4(	1,	0,				0,					0,
+							0,	cos(rotationX),	-sin(rotationX),	0,
+							0,	sin(rotationX),	cos(rotationX),		0,
+							0,	0,				0,					1);
+	gl_Position = projection * rotY * rotZ * rotX * homogenous;
 	color = vec4(aColor, 1.0);
 	greyscale = vec4(aColor.r, aColor.r, aColor.r, 1.0);
 	normal = vec4(aNormal / 2 + 0.5, 1.0);
