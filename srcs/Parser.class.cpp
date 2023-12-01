@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/12/01 14:52:32 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/12/01 14:57:06 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ Parser::Parser(void):
 	this->_normalizeVerticesPositons();
 	this->_calculateNormals();
 	this->_calculateUVs();
+	this->_generateFaceColors();
 	this->_generateVertexDataAndIndicies();
 }
 
