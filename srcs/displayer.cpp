@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 16:31:09 by bguyot            #+#    #+#             */
-/*   Updated: 2023/12/01 13:59:51 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/12/01 14:22:13 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 unsigned int	compileShader(const std::string &path, GLenum shader_type);
 GLFWwindow		*createWindow();
-unsigned int	setupProgram(void);
+int				setupProgram(void);
 void			setupVertex(Parser &parser);
 void			setupTexture(void);
 void			keys(GLFWwindow *window, int key, int scancode, int action, int modes);
@@ -34,7 +34,7 @@ void	displayer(Parser &parser)
 
 	window = createWindow();
 	shaderProgram = setupProgram();
-	if (shaderProgram < 0 || !window)
+	if (!shaderProgram || !window)
 		return ;
 	setupVertex(parser);
 	setupTexture();
@@ -152,7 +152,7 @@ GLFWwindow	*createWindow()
 	return window;
 }
 
-unsigned int	setupProgram(void)
+int	setupProgram(void)
 {
 	unsigned int	fragment_shader;
 	unsigned int	vertex_shader;
@@ -166,7 +166,7 @@ unsigned int	setupProgram(void)
 	{
 		std::cerr << "Failed to compile shader" << std::endl;
 		glfwTerminate();
-		return -1;
+		return 0;
 	}
 
 	shaderProgram = glCreateProgram();
@@ -195,7 +195,7 @@ void	setupVertex(Parser &parser)
 	// Init buffer with size and data from vertices
 	glBufferData(GL_ARRAY_BUFFER, parser.getNbVertexData() * sizeof (double), parser.getVertexDataArray(), GL_STATIC_DRAW);
 
-	// Specifies how the data is organised inside VBO
+	// Specifies how the data is organised inside VBO (X, Y, Z)
 	glVertexAttribPointer(
 		0,					// Index of the vertex attribute
 		3,					// Specifies there is 3 components (X, Y, Z)
@@ -207,6 +207,7 @@ void	setupVertex(Parser &parser)
 	// Starts the vertices at the 0th element of the array
 	glEnableVertexAttribArray(0);
 
+	// Load the color data
 	glVertexAttribPointer(
 		1,					// Index of the vertex attribute
 		3,					// Specifies there is 3 components (X, Y, Z)
@@ -218,6 +219,7 @@ void	setupVertex(Parser &parser)
 	// Starts the vertices at the 0th element of the array
 	glEnableVertexAttribArray(1);
 
+	// Load the UV data
 	glVertexAttribPointer(
 		2,					// Index of the vertex attribute
 		2,					// Specifies there is 3 components (X, Y, Z)
@@ -229,6 +231,7 @@ void	setupVertex(Parser &parser)
 	// Starts the vertices at the 0th element of the array
 	glEnableVertexAttribArray(2);
 
+	// Load the normal data
 	glVertexAttribPointer(
 		3,					// Index of the vertex attribute
 		3,					// Specifies there is 3 components (X, Y, Z)
