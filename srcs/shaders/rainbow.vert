@@ -6,6 +6,9 @@ layout (location = 3) in vec3 aNormal;
 
 uniform float	time;
 uniform float	view_depth;
+uniform float	deltaX;
+uniform float	deltaY;
+uniform float	rotationZ;
 
 flat out	vec4		color;
 flat out	vec4		greyscale;
@@ -18,12 +21,16 @@ void main()
 	mat4 projection = mat4(	1, 0, 0, 0,
 							0, 1, 0, 0,
 							0, 0, 1, 1,
-							0, 0, 0, 1);
+							deltaX, deltaY, 0, 1);
 	mat4 rotY	 = mat4(	cos(time),	0,	-sin(time),	0,
 							0,			1,	0,			0,
 							sin(time),	0,	cos(time),	0,
 							0,			0,	0,			1);
-	gl_Position = projection * rotY * homogenous;
+	mat4 rotZ	 = mat4(	cos(rotationZ),	-sin(rotationZ),	0,	0,
+							sin(rotationZ),	cos(rotationZ),		0,	0,
+							0,				0,					1,	0,
+							0,				0,					0,	1);
+	gl_Position = projection * rotY * rotZ * homogenous;
 	color = vec4(aColor, 1.0);
 	greyscale = vec4(aColor.r, aColor.r, aColor.r, 1.0);
 	normal = vec4(aNormal / 2 + 0.5, 1.0);

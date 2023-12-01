@@ -7,7 +7,23 @@ flat in vec4 color;
 flat in vec4 greyscale;
 flat in vec4 normal;
 
+uniform int mode;
+
 void main() {
-	// gl_FragColor = texture(textureSampler, uv);
-	gl_FragColor = normal;
+	if (mode == 0)
+	{
+		gl_FragColor = color;
+	}
+	else if (mode == 1)
+	{
+		gl_FragColor = greyscale;
+	}
+	else if (mode == 2)
+	{
+		gl_FragColor = normal;
+	}
+	else if (mode == 3)
+	{
+		gl_FragColor = texture(textureSampler, uv);
+	}
 }
