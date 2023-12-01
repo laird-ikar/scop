@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 10:58:55 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/30 14:19:03 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/12/01 13:01:55 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,16 +123,26 @@ struct Vector3D {
 	}
 };
 
+struct Vertex{
+	Vertex(void) : pos(0.0), uv(0.0) {}
+	Vertex(Vector3D &pos) : pos(pos), uv(0.0) {}
+	Vertex(double coord) : pos(coord), uv(0.0)  {}
+	Vertex(const Vertex &v) : pos(v.pos), uv(v.uv) {}
+	virtual ~Vertex(void) {}
+
+	Vector3D	pos;
+	Vector3D	uv;
+};
+
 struct Face {
-	Face(void) : normal(0.0), color(0.0), UV(0.0) {}
-	Face(const Face &src) : vertices(src.vertices), normal(src.normal), color(src.color), UV(src.UV) {}
-	Face(const std::vector<Vector3D> &vertices) : vertices(vertices), normal(0.0), color(0.0), UV(0.0) {}
+	Face(void) : normal(0.0), color(0.0) {}
+	Face(const Face &src) : vertices(src.vertices), normal(src.normal), color(src.color) {}
+	Face(const std::vector<Vertex> &vertices) : vertices(vertices), normal(0.0), color(0.0) {}
 	virtual ~Face(void) {}
 
-	std::vector<Vector3D> vertices;
+	std::vector<Vertex> vertices;
 	Vector3D normal;
 	Vector3D color;
-	Vector3D UV;
 };
 
 #define NB_DATA_FEILD 11

@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/11/30 15:04:40 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/12/01 13:11:23 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,11 +162,11 @@ void	Parser::_normalizeVerticesPositons(void)
 
 	for (Face &face : this->_faces)
 	{
-		for (Vector3D &vertex : face.vertices)
+		for (Vertex &vertex : face.vertices)
 		{
-			vertex.x = (vertex.x - middle.x) / diameter;
-			vertex.y = (vertex.y - middle.y) / diameter;
-			vertex.z = (vertex.z - middle.z) / diameter;
+			vertex.pos.x = (vertex.pos.x - middle.x) / diameter;
+			vertex.pos.y = (vertex.pos.y - middle.y) / diameter;
+			vertex.pos.z = (vertex.pos.z - middle.z) / diameter;
 		}
 	}
 }
@@ -174,16 +174,16 @@ void	Parser::_normalizeVerticesPositons(void)
 void	Parser::_calculateNormals(void)
 {
 	Vector3D	normal;
-	Vector3D	v1;
-	Vector3D	v2;
-	Vector3D	v3;
+	Vertex		v1;
+	Vertex		v2;
+	Vertex		v3;
 
 	for (Face &face : this->_faces)
 	{
 		v1 = face.vertices[0];
 		v2 = face.vertices[1];
 		v3 = face.vertices[2];
-		normal = (v2 - v1).cross(v3 - v1);
+		normal = (v2.pos - v1.pos).cross(v3.pos - v1.pos);
 		normal.normalize();
 		face.normal = normal;
 	}
@@ -193,14 +193,16 @@ void	Parser::_calculateUVs(void)
 {
 	for (Face &face : this->_faces)
 	{
-		face.UV = Vector3D(0, 0, 0);
-		for (Vector3D &vertex : face.vertices)
+		for (Vertex &vertex : face.vertices)
 		{
-			face.UV.x += vertex.x;
-			face.UV.y += vertex.y;
+			// Calculate u and v using the normal and the position
+			if (std::abs(face.normal.x) > std::abs(face.normal.y) && std::abs(face.normal.x) > std::abs(face.normal.z))
+				vertex.uv = Vector3D(vertex.pos.y, vertex.pos.z, 0.0);
+			else if (std::abs(face.normal.y) > std::abs(face.normal.x) && std::abs(face.normal.y) > std::abs(face.normal.z))
+				vertex.uv = Vector3D(vertex.pos.x, vertex.pos.z, 0.0);
+			else
+				vertex.uv = Vector3D(vertex.pos.x, vertex.pos.y, 0.0);
 		}
-		face.UV.x /= face.vertices.size();
-		face.UV.y /= face.vertices.size();
 	}
 }
 
@@ -227,17 +229,17 @@ void	Parser::_generateVertexDataAndIndicies(void)
 			int indexes[3] = {0, i + 1, i + 2};
 			for (int j : indexes)
 			{
-				this->_vertex_data.push_back(face.vertices[j].x);
-				this->_vertex_data.push_back(face.vertices[j].y);
-				this->_vertex_data.push_back(face.vertices[j].z);
+				this->_vertex_data.push_back(face.vertices[j].pos.x);
+				this->_vertex_data.push_back(face.vertices[j].pos.y);
+				this->_vertex_data.push_back(face.vertices[j].pos.z);
 				this->_vertex_data.push_back(face.color.x);
 				this->_vertex_data.push_back(face.color.y);
 				this->_vertex_data.push_back(face.color.z);
 				this->_vertex_data.push_back(face.normal.x);
 				this->_vertex_data.push_back(face.normal.y);
 				this->_vertex_data.push_back(face.normal.z);
-				this->_vertex_data.push_back(face.UV.x);
-				this->_vertex_data.push_back(face.UV.y);
+				this->_vertex_data.push_back(face.vertices[j].uv.x);
+				this->_vertex_data.push_back(face.vertices[j].uv.y);
 				this->_indices.push_back(index);
 				index++;
 			}
