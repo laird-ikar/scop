@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/12/01 14:57:06 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/12/01 15:51:05 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,15 +57,22 @@ Parser::Parser(const std::string &path)
 	if (!file.is_open())
 	{
 		std::cerr << "Cannot open file" << std::endl;
-		Parser();
+		*this = Parser();
 		return ;
 	}
 	while (std::getline(file, line))
 	{
-		if (line.rfind("v ", 0) == 0)
-			this->_parseVertex(line);
-		else if (line.rfind("f ", 0) == 0)
-			this->_parseFace(line);
+		try {
+			if (line.rfind("v ", 0) == 0)
+				this->_parseVertex(line);
+			else if (line.rfind("f ", 0) == 0)
+				this->_parseFace(line);
+		}
+		catch (std::exception &e) {
+			std::cerr << "Error while parsing file: " << e.what() << "" << std::endl;
+			*this = Parser();
+			return ;
+		}
 	}
 	file.close();
 	this->_normalizeVerticesPositons();
@@ -100,6 +107,7 @@ void	Parser::_parseFace(std::string &line)
 	Face						face;
 	std::vector<std::string>	token_list;
 	std::string					token;
+	unsigned int 				index;
 
 	token_list = split(line, " ");
 	for (int i = 1; i < token_list.size(); i++)
@@ -107,7 +115,10 @@ void	Parser::_parseFace(std::string &line)
 		if (token_list[i].length() == 0)
 			continue ;
 		token = token_list[i].substr(0, token_list[i].find("/"));
-		face.vertices.push_back(this->_vertices[std::stoi(token) - 1]);
+		index = std::stoi(token) - 1;
+		if (index >= this->_vertices.size())
+			throw std::runtime_error("Invalid vertex index");
+		face.vertices.push_back(this->_vertices[index]);
 	}
 	this->_faces.push_back(face);
 }
