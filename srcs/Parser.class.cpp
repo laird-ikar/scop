@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/12/01 13:11:23 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/12/01 13:19:04 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,9 @@ Parser			&Parser::operator=(const Parser &rhs)
 void	Parser::_parseFace(std::string &line)
 {
 	Face		face;
-	size_t			pos;
-	std::string		token;
+	size_t		pos;
+	std::string	token;
+	int			index;
 
 	// Skip f
 	pos = line.find(" ");
@@ -91,11 +92,25 @@ void	Parser::_parseFace(std::string &line)
 	while ((pos = line.find(" ")) != std::string::npos) {
 		// Read vertex
 		token = line.substr(0, pos);
-		face.vertices.push_back(this->_vertices[std::stoi(token) - 1]);
+		index = std::stoi(token) - 1;
+		if (index >= this->_vertices.size())
+		{
+			*this = Parser();
+			std::cerr << "Error: invalid vertex index" << std::endl;
+			return ;
+		}
+		face.vertices.push_back(this->_vertices[index]);
 		line.erase(0, pos + 1);
 	}
 	// Add last vertex of line
-	face.vertices.push_back(this->_vertices[std::stoi(line) - 1]);
+	index = std::stoi(line) - 1;
+	if (index >= this->_vertices.size())
+	{
+		*this = Parser();
+		std::cerr << "Error: invalid vertex index" << std::endl;
+		return ;
+	}
+	face.vertices.push_back(this->_vertices[index]);
 	// Save face
 	this->_faces.push_back(face);
 }

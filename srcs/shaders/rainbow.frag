@@ -8,6 +8,6 @@ flat in vec4 greyscale;
 flat in vec4 normal;
 
 void main() {
-	gl_FragColor = texture(textureSampler, uv);
-	// gl_FragColor = normal;
+	// gl_FragColor = texture(textureSampler, uv);
+	gl_FragColor = normal;
 }
