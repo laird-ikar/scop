@@ -6,7 +6,7 @@
 /*   By: bguyot <bguyot@student.42mulhouse.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 11:10:39 by bguyot            #+#    #+#             */
-/*   Updated: 2023/12/01 15:51:05 by bguyot           ###   ########.fr       */
+/*   Updated: 2023/12/01 16:14:20 by bguyot           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,16 @@ Parser::Parser(const std::string &path)
 				this->_parseFace(line);
 		}
 		catch (std::exception &e) {
-			std::cerr << "Error while parsing file: " << e.what() << "" << std::endl;
+			std::cerr << "\033[1;31mError while parsing file:\033[0m " << e.what() << "" << std::endl;
 			*this = Parser();
 			return ;
 		}
+	}
+	if (this->_vertices.size() == 0 || this->_faces.size() == 0)
+	{
+		std::cerr << "\033[1;31mError while parsing file:\033[0m no vertices or faces found" << std::endl;
+		*this = Parser();
+		return ;
 	}
 	file.close();
 	this->_normalizeVerticesPositons();
@@ -110,6 +116,8 @@ void	Parser::_parseFace(std::string &line)
 	unsigned int 				index;
 
 	token_list = split(line, " ");
+	if (token_list.size() < 4)
+		throw std::runtime_error("Invalid face");
 	for (int i = 1; i < token_list.size(); i++)
 	{
 		if (token_list[i].length() == 0)
