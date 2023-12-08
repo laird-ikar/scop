@@ -218,6 +218,7 @@ void	Parser::_calculateUVs(void)
 				vertex.uv = Vector3D(vertex.pos.x, vertex.pos.z, 0.0);
 			else
 				vertex.uv = Vector3D(vertex.pos.x, vertex.pos.y, 0.0);
+			vertex.uv *= 2;
 		}
 	}
 }
